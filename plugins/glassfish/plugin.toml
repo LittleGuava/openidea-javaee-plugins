@@ -1,17 +1,16 @@
 id = "littleguava.glassfish"
 name = "GlassFish"
 version = "0.1.0"
-description = "Start, stop, deploy and debug applications on a local GlassFish or Payara domain through asadmin."
+description = "GlassFish and Payara through asadmin. Early version: shows the installed asadmin version; start, stop, deploy and debug are coming."
 authors = ["LittleGuava"]
 homepage = "https://github.com/LittleGuava/openidea-javaee-plugins"
 license = "Apache-2.0"
 categories = ["frameworks", "tools"]
-engines.openidea = "^1.4"
+engines.openidea = "^1.13"
 wasm = "dist/plugin.wasm"
-activation = ["on-command:*"]
 
 [capabilities]
-required = ["project.read", "process:asadmin"]
+required = ["process:asadmin"]
 
 [[contributes.commands]]
 id = "version"

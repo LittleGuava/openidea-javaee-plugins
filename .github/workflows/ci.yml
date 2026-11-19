@@ -41,6 +41,9 @@ jobs:
           gunzip -c "$RUNNER_TEMP/openidea-plugin-linux-x86_64.gz" > "$HOME/.local/bin/openidea-plugin"
           chmod +x "$HOME/.local/bin/openidea-plugin"
           openidea-plugin --version
+      - name: SDK tag matches OPENIDEA_TAG
+        working-directory: plugins/${{ matrix.plugin }}
+        run: grep -q "tag = \"$OPENIDEA_TAG\"" Cargo.toml || { echo "::error::Cargo.toml does not use the SDK at $OPENIDEA_TAG"; exit 1; }
       - name: Lint and tests
         working-directory: plugins/${{ matrix.plugin }}
         run: |
