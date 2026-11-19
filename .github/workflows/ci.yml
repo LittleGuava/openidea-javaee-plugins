@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  OPENIDEA_TAG: v0.1.49
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - working-directory: crates/javaee-core
+        run: |
+          cargo fmt --check
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo test --locked
+
+  plugin:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: [glassfish]
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup target add wasm32-wasip2
+      - name: openidea-plugin
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.local/bin"
+          gh release download "$OPENIDEA_TAG" --repo l0ng-ai/openidea -p openidea-plugin-linux-x86_64.gz -D "$RUNNER_TEMP"
+          gunzip -c "$RUNNER_TEMP/openidea-plugin-linux-x86_64.gz" > "$HOME/.local/bin/openidea-plugin"
+          chmod +x "$HOME/.local/bin/openidea-plugin"
+          openidea-plugin --version
+      - name: Lint and tests
+        working-directory: plugins/${{ matrix.plugin }}
+        run: |
+          cargo fmt --check
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo test --locked
+      - name: Build and check
+        working-directory: plugins/${{ matrix.plugin }}
+        run: openidea-plugin build
