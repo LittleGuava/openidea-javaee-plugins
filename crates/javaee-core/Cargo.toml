@@ -1,0 +1,10 @@
+[package]
+name = "javaee-core"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Pure logic shared by the plugins: parsers and argv builders, no host calls"
+
+[workspace]
+
+[dependencies]
